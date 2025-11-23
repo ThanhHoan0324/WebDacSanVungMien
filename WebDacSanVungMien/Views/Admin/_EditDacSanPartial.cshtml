@@ -1,0 +1,83 @@
+﻿@model WebDacSanVungMien.Models.Specialty
+
+<form asp-action="EditDacSan" asp-controller="Admin" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="SpecialtyID" />
+    <input type="hidden" asp-for="CreatedDate" />
+    <input type="hidden" asp-for="AvgRating" />
+    <input type="hidden" asp-for="ViewCount" />
+
+    <div class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label asp-for="SpecialtyName" class="block text-sm font-medium text-gray-400 mb-1">Tên Đặc Sản <span class="text-red-500">*</span></label>
+                <input asp-for="SpecialtyName" required
+                       class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200">
+            </div>
+
+            <div>
+                <label asp-for="RegionID" class="block text-sm font-medium text-gray-400 mb-1">Vùng Miền <span class="text-red-500">*</span></label>
+                <select asp-for="RegionID" required
+                        class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary text-gray-200">
+                    <option value="">--- Chọn Vùng Miền ---</option>
+                    @if (ViewBag.Regions != null)
+                    {
+                        @foreach (var region in ViewBag.Regions)
+                        {
+                            <option value="@region.RegionID">@region.RegionName</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label asp-for="Price" class="block text-sm font-medium text-gray-400 mb-1">Giá Bán (VNĐ)</label>
+                <input asp-for="Price" type="number"
+                       class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200">
+            </div>
+            <div>
+                <label asp-for="ImageURL" class="block text-sm font-medium text-gray-400 mb-1">Link Ảnh <span class="text-red-500">*</span></label>
+                <input asp-for="ImageURL" type="text"
+                       class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200">
+            </div>
+        </div>
+
+        <div>
+            <label asp-for="Ingredients" class="block text-sm font-medium text-gray-400 mb-1">Nguyên Liệu @* <span class="text-red-500">*</span> *@</label>
+            <textarea asp-for="Ingredients" rows="2"
+                      class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"
+                      placeholder="Các nguyên liệu chính..."></textarea>
+        </div>
+
+        <div>
+            <label asp-for="Preparation" class="block text-sm font-medium text-gray-400 mb-1">Cách Chế Biến @* <span class="text-red-500">*</span> *@</label>
+            <textarea asp-for="Preparation" rows="3"
+                      class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"
+                      placeholder="Các bước chuẩn bị và chế biến..."></textarea>
+        </div>
+
+        <div>
+            <label asp-for="ShortDescription" class="block text-sm font-medium text-gray-400 mb-1">Mô Tả Ngắn <span class="text-red-500">*</span></label>
+            <textarea asp-for="ShortDescription" rows="2"
+                      class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"></textarea>
+        </div>
+
+        <div>
+            <label asp-for="Description" class="block text-sm font-medium text-gray-400 mb-1">Mô Tả Chi Tiết</label>
+            <textarea asp-for="Description" rows="4"
+                      class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"></textarea>
+        </div>
+
+    </div>
+
+    <div class="modal-footer border-t border-gray-700 mt-4 pt-4 flex justify-end">
+        <button type="button" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg mr-2" data-bs-dismiss="modal">Hủy</button>
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg">Cập Nhật Đặc Sản</button>
+    </div>
+</form>
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

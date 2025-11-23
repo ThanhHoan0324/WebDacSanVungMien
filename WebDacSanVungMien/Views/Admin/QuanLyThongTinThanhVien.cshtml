@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Quản Lý Thành Viên";
+}
+
+<div class="space-y-6">
+    <div class="bg-cardbg p-6 rounded-xl shadow-2xl">
+        <h2 class="text-xl font-semibold mb-4 text-gray-100">Danh Sách Thành Viên</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-darkbg">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tên Đăng Nhập</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Ngày Đăng Ký</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Trạng Thái</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-cardbg divide-y divide-gray-700">
+                    <tr class="hover:bg-gray-700 transition duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100">501</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">nguyenvana</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">vana@example.com</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">01/01/2023</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">Hoạt động</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            <button onclick="viewMemberDetail(501)" class="text-primary hover:text-emerald-400 mr-3">Xem</button>
+                            <button onclick="toggleMemberStatus(501, 'Ban')" class="text-yellow-400 hover:text-yellow-300">Khóa</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function viewMemberDetail(id) {
+            alert("Xem chi tiết Thành Viên ID: " + id);
+        }
+        function toggleMemberStatus(id, action) {
+            if (confirm("Bạn có chắc chắn muốn " + action + " Thành Viên ID: " + id + "?")) {
+                alert("Đã thực hiện hành động: " + action + " với ID: " + id);
+            }
+        }
+    </script>
+}

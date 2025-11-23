@@ -1,0 +1,90 @@
+﻿@model WebDacSanVungMien.Models.ViewModels.AccountViewModel
+
+@{
+    ViewBag.Title = "DangNhap";
+    // Đảm bảo bạn có cả link CSS và JS cần thiết (được cho là có trong Layout hoặc đã được thêm)
+}
+
+<div class="container mt-5">
+    <div class="card mx-auto" style="max-width: 500px;">
+
+        <div class="card-header tab-container">
+            <div class="tab-active-bg" id="tab-bg"></div>
+            <button id="nut-dangnhap" class="btn-tab">Đăng Nhập</button>
+            <button id="nut-dangky" class="btn-tab">Đăng Ký</button>
+        </div>
+        <div class="card-body form-container">
+            <div id="dangnhapform" class="dangnhapform active-form d-flex justify-content-center align-items-center">
+                <form asp-controller="Account" asp-action="Login" method="post" class="w-100" style="max-width: 450px;">
+                    @* ... Nội dung form Đăng Nhập ... *@
+                    @Html.AntiForgeryToken()
+                    <div class="ms-5 ps-2 mt-5">
+                        <div class="my-3 input-group-lg">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input asp-for="Login.Email" class="form-control" placeholder="Email (Tên Đăng Nhập)" required>
+                            </div>
+                            <span asp-validation-for="Login.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 input-group-lg">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input asp-for="Login.Password" type="password" class="form-control" placeholder="Mật Khẩu" required>
+                            </div>
+                            <span asp-validation-for="Login.Password" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3 text-center ">
+                        <button type="submit" class="btn btn-success w-50 ">Đăng Nhập</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="dangkyform" class="dangkyform">
+                <form asp-controller="Account" asp-action="Register" method="post" class="w-100" style="max-width: 450px;">
+                    @* ... Nội dung form Đăng Ký ... *@
+                    @Html.AntiForgeryToken()
+                    <div class="ms-5 ps-5">
+                        <div class="my-3 input-group-lg">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input asp-for="Register.Username" class="form-control" placeholder="Tên Đăng Nhập" required>
+                            </div>
+                            <span asp-validation-for="Register.Username" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 input-group-lg">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input asp-for="Register.Password" type="password" class="form-control" placeholder="Mật Khẩu" required>
+                            </div>
+                            <span asp-validation-for="Register.Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 input-group-lg">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Register.Email" class="form-control" placeholder="Email" required>
+                            </div>
+                            <span asp-validation-for="Register.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 input-group-lg">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                <input asp-for="Register.PhoneNumber" class="form-control" placeholder="Số điện thoại" required>
+                            </div>
+                            <span asp-validation-for="Register.PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3 text-center ">
+                        <button type="submit" class="btn btn-success ms-5 w-50">Đăng Ký</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/DangNhap.js"></script>
+}
