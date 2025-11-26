@@ -6,21 +6,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using BCrypt.Net;
 using WebDacSanVungMien.Models.ViewModels;
-
+using System.Security.Claims; 
+using Microsoft.AspNetCore.Authentication; 
+using Microsoft.AspNetCore.Authentication.Cookies; 
 namespace WebDacSanVungMien.Controllers
 {
     public class AccountController : Controller
     {
         private readonly DatabaseContext _context;
+        // Giả định RoleID = 1 là Admin, RoleID = 2 là Member
+        private const int AdminRoleID = 1;
+        private const int MemberRoleID = 2;
 
         public AccountController(DatabaseContext context)
         {
             _context = context;
         }
-
-        private const string AuthViewName = "Login"; // Tên View hợp nhất
-
-        // --- HÀNH ĐỘNG GET: Hiển thị form Đăng Nhập/Đăng Ký HỢP NHẤT ---
+        private const string AuthViewName = "Login";
         [HttpGet]
         public IActionResult Login()
         {
@@ -33,9 +35,8 @@ namespace WebDacSanVungMien.Controllers
             return View(AuthViewName, viewModel);
         }
 
-        // --- HÀNH ĐỘNG POST: Xử lý Đăng Ký (Sửa để nhận AccountViewModel) ---
         [HttpPost]
-        public async Task<IActionResult> Register(AccountViewModel viewModel) // <-- Đã cập nhật
+        public async Task<IActionResult> Register(AccountViewModel viewModel)
         {
             // Bỏ qua Validation cho phần Login
             ModelState.Keys
@@ -66,7 +67,8 @@ namespace WebDacSanVungMien.Controllers
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber ?? string.Empty,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
-                RoleID = 2,
+                RoleID = MemberRoleID, // Mặc định là Member (RoleID = 2)
+
                 RegistrationDate = DateTime.Now,
                 IsBanned = false,
                 LastLogin = DateTime.Now
@@ -78,21 +80,20 @@ namespace WebDacSanVungMien.Controllers
             {
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
-                return RedirectToAction("Login", "Account"); // <-- return ở đây
+                return RedirectToAction("Login", "Account");
             }
             catch (DbUpdateException ex)
             {
-                // Vẫn nên kiểm tra lỗi ở đây nếu Debug không tự hiển thị
+
                 ModelState.AddModelError("", "Lỗi Database: " + ex.Message);
                 ViewBag.ActiveTab = "Register";
                 return View(AuthViewName, viewModel);
             }
-
         }
 
-        // --- HÀNH ĐỘNG POST: Xử lý Đăng Nhập ---
+        // --- HÀNH ĐỘNG POST: Xử lý Đăng Nhập (Đã sửa logic phân quyền) ---
         [HttpPost]
-        public async Task<IActionResult> Login(AccountViewModel viewModel) // <-- Đã cập nhật
+        public async Task<IActionResult> Login(AccountViewModel viewModel)
         {
             // Bỏ qua Validation cho phần Register
             ModelState.Keys
@@ -107,8 +108,8 @@ namespace WebDacSanVungMien.Controllers
                 ViewBag.ActiveTab = "Login";
                 return View(AuthViewName, viewModel);
             }
+            // 1. Tìm kiếm User bằng Email, tải Role kèm theo
 
-            // 1. Tìm kiếm User bằng Email
             var user = await _context.Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == model.Email);
@@ -128,15 +129,52 @@ namespace WebDacSanVungMien.Controllers
                 ViewBag.ActiveTab = "Login";
                 return View(AuthViewName, viewModel);
             }
-
+            // 4. Cập nhật thời gian đăng nhập cuối cùng
             user.LastLogin = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            // ✅ THÔNG BÁO THÀNH CÔNG ĐĂNG NHẬP
-            // (Thêm code Authentication của bạn tại đây)
-            // Sau khi hoàn tất Authentication:
+            // 5. THỰC HIỆN ĐĂNG NHẬP (Authentication)
+
+            // Tạo Claims (Thông tin người dùng)
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
+                // Thêm Claim Role dựa trên RoleName
+                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "Guest")
+            };
+
+            var claimsIdentity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                // Thêm các thuộc tính khác như Persistent cookie, Expiration, v.v.
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60)
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+
             TempData["SuccessMessage"] = $"Chào mừng {user.Username} đã trở lại!";
-            return RedirectToAction("Index", "Home");
+
+            // 6. PHÂN QUYỀN VÀ CHUYỂN HƯỚNG
+            if (user.RoleID == AdminRoleID) // Nếu là Admin (RoleID = 1)
+            {
+                // Chuyển hướng đến trang Admin Dashboard
+                return RedirectToAction("QuanLyThongTinVungMien", "Admin");
+            }
+            else // Nếu là User thường (Member, Guest, RoleID khác 1)
+            {
+                // Chuyển hướng đến trang chủ công cộng
+                return RedirectToAction("Index", "Home");
+            }
+
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebDacSanVungMien.Models;
 
@@ -11,9 +12,11 @@ using WebDacSanVungMien.Models;
 namespace WebDacSanVungMien.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251125014815_AddRegionDataConstraints")]
+    partial class AddRegionDataConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,14 +71,16 @@ namespace WebDacSanVungMien.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
                     b.Property<string>("RegionName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("RegionID");
 
@@ -122,14 +127,6 @@ namespace WebDacSanVungMien.Migrations
                     b.Property<decimal>("AvgRating")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-
                     b.Property<string>("ImageURL")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -144,9 +141,6 @@ namespace WebDacSanVungMien.Migrations
                     b.Property<string>("Preparation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 2)");
-
 
                     b.Property<int>("RegionID")
                         .HasColumnType("int");
@@ -157,10 +151,7 @@ namespace WebDacSanVungMien.Migrations
 
                     b.Property<string>("SpecialtyName")
                         .IsRequired()
-
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ViewCount")
                         .HasColumnType("int");

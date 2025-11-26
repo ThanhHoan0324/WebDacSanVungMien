@@ -1,3 +1,18 @@
 ﻿@{
+
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+
+    if (controller == "Admin")
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+                                                                            
+
     Layout = "_Layout";
 }
+

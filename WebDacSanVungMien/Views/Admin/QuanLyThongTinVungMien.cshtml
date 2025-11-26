@@ -1,0 +1,193 @@
+﻿@model IEnumerable<WebDacSanVungMien.Models.Region>
+
+@{
+    ViewData["Title"] = "Quản Lý Vùng Miền";
+}
+
+<div class="space-y-6">
+    <div class="flex justify-end">
+        <button id="addRegionBtn" class="bg-primary hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-200 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            Thêm Vùng Miền Mới
+        </button>
+    </div>
+
+    <div class="bg-cardbg p-6 rounded-xl shadow-2xl">
+        <h2 class="text-xl font-semibold mb-4 text-gray-100">Danh Sách Vùng Miền</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-darkbg">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-base font-semibold text-gray-400 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-base font-semibold text-gray-400 uppercase tracking-wider">Tên Vùng Miền</th>
+                        <th class="px-6 py-3 text-left text-base font-semibold text-gray-400 uppercase tracking-wider">Mô Tả</th>
+                        <th class="px-6 py-3 text-center text-base font-semibold text-gray-400 uppercase tracking-wider">Hiển Thị</th>
+                        <th class="px-6 py-3 text-center text-base font-semibold text-gray-400 uppercase tracking-wider">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-cardbg divide-y divide-gray-700">
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-gray-700 transition duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-base font-medium text-gray-100">@item.RegionID</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-300">@item.RegionName</td>
+                                <td class="px-6 py-4 text-base text-gray-300">
+                                    @{
+                                        // Cắt ngắn mô tả nếu quá dài
+                                        string descriptionText = item.Description ?? "";
+                                        string displayDescription = descriptionText.Length > 50
+                                        ? descriptionText.Substring(0, 50) + "..."
+                                        : descriptionText;
+                                    }
+                                    @displayDescription
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <span class="px-2 inline-flex text-base leading-5 font-semibold rounded-full @(item.IsVisible ? "bg-green-500" : "bg-red-500") text-white">
+                                        @(item.IsVisible ? "Có" : "Không")
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-base font-medium">
+                                    <button onclick="openEditModal(@item.RegionID, '@item.RegionName.Replace("'", "\\'")', '@(item.Description?.Replace("'", "\\'") ?? "")', @item.IsVisible.ToString().ToLower())" class="text-indigo-400 hover:text-indigo-300 mr-3">Sửa</button>
+
+                                    <button onclick="confirmDelete(@item.RegionID)" class="text-red-400 hover:text-red-300">Xóa</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr class="hover:bg-gray-700 transition duration-150">
+                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-400">Không có dữ liệu Vùng Miền nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="regionModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center z-50 transition-opacity duration-300">
+    <div class="bg-cardbg rounded-xl shadow-3xl w-full max-w-lg p-6 m-4 transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+        <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+            <h3 class="text-xl font-bold text-gray-100" id="modalTitle">Thêm Vùng Miền Mới</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-100 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <form id="regionForm" method="post" asp-action="AddRegion" asp-controller="Admin">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" id="regionID" name="RegionID" value="0" />
+
+            <div class="mb-4">
+                <label for="regionName" class="block text-sm font-medium text-gray-300 mb-1">Tên Vùng Miền <span class="text-red-500">*</span></label>
+                <input type="text" id="regionName" name="RegionName" required class="w-full px-3 py-2 bg-darkbg border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ví dụ: Miền Bắc, Miền Nam" />
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-300 mb-1">Mô Tả</label>
+                <textarea id="description" name="Description" rows="3" class="w-full px-3 py-2 bg-darkbg border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Mô tả ngắn về vùng miền này..."></textarea>
+            </div>
+
+            <div class="mb-6 flex items-center">
+                <input type="checkbox" id="isVisible" name="IsVisible" value="true" checked class="h-4 w-4 text-primary bg-darkbg border-gray-700 rounded focus:ring-primary" />
+                <label for="isVisible" class="ml-2 text-sm font-medium text-gray-300">Hiển thị trên trang người dùng</label>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="button" onclick="closeModal()" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg mr-2 transition duration-200">Hủy</button>
+                <button type="submit" id="submitBtn" class="bg-primary hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200">Lưu Thông Tin</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<form id="deleteForm" method="post" asp-action="DeleteRegion" asp-controller="Admin" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="deleteRegionId" name="id" />
+</form>
+
+@section Scripts {
+    <script>
+        const modal = document.getElementById('regionModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalTitle = document.getElementById('modalTitle');
+        const regionID = document.getElementById('regionID');
+        const regionName = document.getElementById('regionName');
+        const description = document.getElementById('description');
+        const isVisible = document.getElementById('isVisible');
+        const regionForm = document.getElementById('regionForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteRegionId = document.getElementById('deleteRegionId');
+
+        // Hàm mở Modal
+        function openModal() {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // Hàm đóng Modal
+        function closeModal() {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                regionForm.reset();
+            }, 300);
+        }
+
+        // 1. Logic cho nút Thêm Mới
+        document.getElementById('addRegionBtn').addEventListener('click', () => {
+            modalTitle.textContent = "Thêm Vùng Miền Mới";
+            // Gán action chính xác cho Thêm mới
+            regionForm.action = '@Url.Action("AddRegion", "Admin")';
+            regionID.value = 0;
+            // Đảm bảo checkbox được tick theo mặc định
+            isVisible.checked = false;
+            submitBtn.textContent = "Thêm Mới";
+            openModal();
+        });
+
+        // 2. Logic cho nút Chỉnh Sửa
+        function openEditModal(id, name, desc, visible) {
+            modalTitle.textContent = "Chỉnh Sửa Vùng Miền";
+            // Gán action chính xác cho Chỉnh sửa
+            regionForm.action = '@Url.Action("EditRegion", "Admin")';
+
+            // Đổ dữ liệu vào form
+            regionID.value = id;
+            regionName.value = name;
+            description.value = desc;
+            isVisible.checked = (visible === 'true');
+
+            submitBtn.textContent = "Lưu Thay Đổi";
+            openModal();
+        }
+
+        // 3. Logic cho nút Xóa
+        function confirmDelete(id) {
+            if (confirm("Bạn có chắc chắn muốn xóa Vùng Miền ID: " + id + "? Thao tác này không thể hoàn tác.")) {
+                // Đặt ID vào Form ẩn và submit
+                deleteRegionId.value = id;
+                deleteForm.submit();
+            }
+        }
+
+
+        // Đóng Modal khi click ra ngoài
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+}

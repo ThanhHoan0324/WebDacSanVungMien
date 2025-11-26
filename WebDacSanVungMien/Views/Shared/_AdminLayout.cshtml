@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Admin </title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10B981',
+                        secondary: '#374151',
+                        darkbg: '#1F2937',
+                        cardbg: '#374151',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Các CSS tùy chỉnh vẫn giữ nguyên */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav-item.active {
+            background-color: #10B981;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3), 0 2px 4px -2px rgba(16, 185, 129, 0.3);
+        }
+
+        .nav-item:hover:not(.active) {
+            background-color: #4B5563;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <aside id="sidebar" class="w-64 bg-darkbg shadow-xl flex flex-col transition-all duration-300 ease-in-out">
+            <div class="p-6 flex items-center justify-center border-b border-gray-700">
+                <span class="text-2xl font-bold text-primary">ADMIN </span>
+            </div>
+
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto" id="admin-nav-menu">
+
+                <div class="pt-4 pb-2 text-xs font-semibold uppercase text-gray-400">Quản Lý Dữ Liệu</div>
+                <a asp-action="QuanLyThongTinVungMien" asp-controller="Admin" class="nav-item w-full flex items-center p-3 rounded-lg transition duration-150 ease-in-out group text-gray-300 active-if-vungmien">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Vùng Miền</span>
+                </a>
+                <a asp-action="QuanLyThongTinDacSanVungMien" asp-controller="Admin" class="nav-item w-full flex items-center p-3 rounded-lg transition duration-150 ease-in-out group text-gray-300 active-if-dacsan">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.504A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 4.504M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
+                    <span>Thông Tin Đặc Sản</span>
+                </a>
+                <a asp-action="QuanLyThongTinThanhVien" asp-controller="Admin" class="nav-item w-full flex items-center p-3 rounded-lg transition duration-150 ease-in-out group text-gray-300 active-if-thanhvien">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20v-2h-.09C15.225 17.5 13.5 18 12 18s-3.225-.5-4.91-1.857M5 20h5v-2a3 3 0 00-5.356-1.857M3 10a3 3 0 116 0 3 3 0 01-6 0zM12 12a3 3 0 116 0 3 3 0 01-6 0zM17 10a3 3 0 116 0 3 3 0 01-6 0z"></path></svg>
+                    <span>Thành Viên</span>
+                </a>
+
+
+                <div class="pt-6 pb-2 text-xs font-semibold uppercase text-gray-400">Báo Cáo & Thống Kê</div>
+                <a asp-action="ThongKeDacSanYeuThich" asp-controller="Admin" class="nav-item w-full flex items-center p-3 rounded-lg transition duration-150 ease-in-out group text-gray-300 active-if-yeuthich">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8V4m-4 8H4m16 0h-4M4 16h16"></path></svg>
+                    <span>Đặc Sản Yêu Thích</span>
+                </a>
+                <a asp-action="ThongKeThanhVien" asp-controller="Admin" class="nav-item w-full flex items-center p-3 rounded-lg transition duration-150 ease-in-out group text-gray-300 active-if-thongke">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.945 14.945L21.849 21.849M17 17l4 4"></path></svg>
+                    <span>Thống Kê Thành Viên</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex items-center text-sm text-gray-400">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-semibold mr-3">A</div>
+                    <div>
+                        <p class="text-white font-medium">Admin Hệ Thống</p>
+                        <p class="text-xs">Role: Quản Trị Viên</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-800">
+            <header class="flex items-center justify-between p-4 bg-white dark:bg-darkbg shadow-md sticky top-0 z-10">
+                <h1 id="main-title" class="text-2xl font-semibold text-gray-800 dark:text-gray-100">@ViewBag.Title</h1>
+                <button id="mobile-menu-btn" class="lg:hidden text-gray-600 dark:text-gray-300 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </header>
+
+            <div class="p-6">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Logic JS cho Layout (Responsive Sidebar và Active Menu)
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const currentPath = window.location.pathname.toLowerCase();
+            const navLinks = document.querySelectorAll('.nav-item');
+
+            // Xử lý responsive cho sidebar
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebar.classList.toggle('translate-x-0');
+            });
+
+            // Đặt active cho menu dựa trên URL hiện tại
+            navLinks.forEach(link => {
+                const action = link.getAttribute('asp-action').toLowerCase();
+                // Giả sử URL có dạng /Admin/ActionName
+                if (currentPath.includes(action)) {
+                    link.classList.add('active');
+                    link.classList.remove('text-gray-300');
+                    link.classList.add('text-white');
+                } else {
+                    link.classList.remove('active', 'text-white');
+                    link.classList.add('text-gray-300');
+                }
+            });
+
+        });
+
+    </script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

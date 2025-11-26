@@ -1,0 +1,225 @@
+﻿@model List<WebDacSanVungMien.Models.Specialty>
+@{
+    ViewData["Title"] = "Quản Lý Thông Tin Đặc Sản";
+}
+
+<div class="fixed top-20 right-5 z-50 w-full max-w-sm">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-emerald-500 text-white p-4 rounded-lg shadow-xl mb-4 transition duration-300 transform animate-pulse-fadeout">
+            <strong>Thành công!</strong> @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-red-500 text-white p-4 rounded-lg shadow-xl mb-4 transition duration-300 transform animate-pulse-fadeout">
+            <strong>Lỗi!</strong> @TempData["ErrorMessage"]
+        </div>
+    }
+</div>
+
+<div class="space-y-6">
+    <div class="flex justify-end">
+        <button data-bs-toggle="modal" data-bs-target="#addDacSanModal" class="bg-primary hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-200 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            Thêm Đặc Sản
+        </button>
+    </div>
+
+    <div class="bg-cardbg p-6 rounded-xl shadow-2xl">
+        <h2 class="text-xl font-semibold mb-4 text-gray-100">Danh Sách Đặc Sản</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-darkbg">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tên Đặc Sản</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Vùng Miền</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Giá Bán</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Trạng Thái</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-cardbg divide-y divide-gray-700">
+
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-gray-700 transition duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100">@item.SpecialtyID</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">@item.SpecialtyName</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">@(item.Region != null ? item.Region.RegionName : "N/A")</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-yellow-400">@item.Price.ToString("N0") VNĐ</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                                    <input type="checkbox"
+                                           id="isApproved_@item.SpecialtyID"
+                                           data-id="@item.SpecialtyID"
+                                           @(item.IsApproved ? "checked" : "")
+                                           onchange="toggleApproval(@item.SpecialtyID, this.checked)"
+                                           class="h-4 w-4 text-primary bg-darkbg border-gray-600 rounded focus:ring-primary cursor-pointer" />
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                    <button onclick="openEditDacSanModal(@item.SpecialtyID)" class="text-indigo-400 hover:text-indigo-300 mr-3">Sửa</button>
+                                    <button onclick="confirmDeleteDacSan(@item.SpecialtyID)" class="text-red-400 hover:text-red-300">Xóa</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-400">Không tìm thấy Đặc Sản nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addDacSanModal" tabindex="-1" aria-labelledby="addDacSanModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-cardbg text-gray-300 border border-gray-700">
+            <div class="modal-header border-b border-gray-700">
+                <h5 class="modal-title text-xl font-bold text-gray-100" id="addDacSanModalLabel">Thêm Đặc Sản Mới</h5>
+                <button type="button" class="btn-close text-gray-400 hover:text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form asp-action="AddDacSan" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                <div class="modal-body space-y-4">
+                    @Html.AntiForgeryToken()
+
+                    @Html.ValidationSummary(false, "", new { @class = "text-red-500 bg-red-800/20 p-3 rounded" })
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="SpecialtyName" class="block text-sm font-medium text-gray-400 mb-1">Tên Đặc Sản <span class="text-red-500">*</span></label>
+                            <input type="text" id="SpecialtyName" name="SpecialtyName" required
+                                   class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"
+                                   placeholder="Ví dụ: Phở Hà Nội">
+                        </div>
+
+                        <div>
+                            <label for="RegionID" class="block text-sm font-medium text-gray-400 mb-1">Vùng Miền <span class="text-red-500">*</span></label>
+                            <select id="RegionID" name="RegionID" required
+                                    class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary text-gray-200">
+                                <option value="">--- Chọn Vùng Miền ---</option>
+                                @if (ViewBag.Regions != null)
+                                {
+                                    @foreach (var region in ViewBag.Regions)
+                                    {
+                                        <option value="@region.RegionID">@region.RegionName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="Price" class="block text-sm font-medium text-gray-400 mb-1">Giá Bán (VNĐ)</label>
+                            <input type="number" id="Price" name="Price"
+                                   class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"
+                                   placeholder="Ví dụ: 50000">
+                        </div>
+                        <div>
+                            <label for="ImageFile" class="block text-sm font-medium text-gray-400 mb-1">Chọn Ảnh <span class="text-red-500">*</span></label>
+                            <input type="file" id="ImageFile" name="ImageFile" 
+                                   class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary text-gray-200"
+                                   accept="image/*"> 
+                            <span data-valmsg-for="ImageFile" class="text-red-500 text-xs mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="ShortDescription" class="block text-sm font-medium text-gray-400 mb-1">Mô Tả Ngắn <span class="text-red-500">*</span></label>
+                        <textarea id="ShortDescription" name="ShortDescription" rows="2" required
+                                  class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"
+                                  placeholder="Tóm tắt ngắn gọn về đặc sản (Tối đa 255 ký tự)"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="Description" class="block text-sm font-medium text-gray-400 mb-1">Mô Tả Chi Tiết</label>
+                        <textarea id="Description" name="Description" rows="4"
+                                  class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"
+                                  placeholder="Nguyên liệu, cách chế biến, lịch sử..."></textarea>
+                    </div>
+                    <div>
+                        <label for="Ingredients" class="block text-sm font-medium text-gray-400 mb-1">Nguyên Liệu <span class="text-red-500">*</span></label>
+                        <textarea id="Ingredients" name="Ingredients" rows="2" required
+                                  class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"
+                                  placeholder="Danh sách các nguyên liệu chính..."></textarea>
+                        <span data-valmsg-for="Ingredients" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+
+                    <div>
+                        <label for="Preparation" class="block text-sm font-medium text-gray-400 mb-1">Cách Chế Biến <span class="text-red-500">*</span></label>
+                        <textarea id="Preparation" name="Preparation" rows="4" required
+                                  class="w-full p-2.5 bg-darkbg border border-gray-600 rounded-lg focus:ring-primary focus:border-primary placeholder-gray-500 text-gray-200"
+                                  placeholder="Các bước chế biến cơ bản..."></textarea>
+                        <span data-valmsg-for="Preparation" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-t border-gray-700 flex justify-end">
+                    <button type="button" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg mr-2" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="bg-primary hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Lưu Đặc Sản</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editDacSanModal" tabindex="-1" aria-labelledby="editDacSanModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-cardbg text-gray-300 border border-gray-700">
+            <div class="modal-header border-b border-gray-700">
+                <h5 class="modal-title text-xl font-bold text-gray-100" id="editDacSanModalLabel">Sửa Đặc Sản</h5>
+                <button type="button" class="btn-close text-gray-400 hover:text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editDacSanBody">
+                <p>Đang tải dữ liệu...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="deleteForm" asp-action="DeleteDacSan" asp-controller="Admin" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="deleteId" name="id" />
+</form>
+
+@section Scripts {
+    <script src="~/js/Admin.js" asp-append-version="true"></script>
+    <script>
+        // Hàm xác nhận và gửi Form Xóa
+        function confirmDeleteDacSan(id) {
+            if (confirm("Bạn có chắc chắn muốn xóa Đặc Sản ID: " + id + "? Hành động này không thể hoàn tác!")) {
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+        // --- LOGIC ẨN THÔNG BÁO TEMPDATA SAU 1 GIÂY ---
+         $(document).ready(function () {
+             // Chọn tất cả các thẻ div thông báo có thể đã được render
+             const successAlert = $(".bg-emerald-500");
+             const errorAlert = $(".bg-red-500");
+
+             // Nếu có thông báo thành công, delay 1000ms (1 giây) rồi làm mờ dần
+             if (successAlert.length) {
+                 successAlert.delay(1000).fadeOut(500); // Ẩn dần trong 500ms
+             }
+
+             // Nếu có thông báo lỗi, delay 1000ms (1 giây) rồi làm mờ dần
+             if (errorAlert.length) {
+                 errorAlert.delay(1000).fadeOut(500); // Ẩn dần trong 500ms
+             }
+         });
+  
+    </script>
+}

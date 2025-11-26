@@ -100,3 +100,18 @@ textarea {
 input, select, textarea {
     max-width: 280px;
 }
+
+
+@keyframes fadeOutQuick {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.alert-fade-1s {
+    animation: fadeOutQuick 1s ease-in-out forwards;
+}
