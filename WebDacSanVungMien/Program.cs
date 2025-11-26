@@ -1,5 +1,8 @@
+
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Dacsanvungmien");
@@ -8,6 +11,7 @@ builder.Services.AddDbContext<WebDacSanVungMien.Models.DatabaseContext>(options 
     // SỬ DỤNG chuỗi kết nối đã lấy được
     options.UseSqlServer(connectionString)
 );
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -28,6 +32,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -45,6 +50,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapStaticAssets();

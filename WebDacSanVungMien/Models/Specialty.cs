@@ -1,12 +1,16 @@
+
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema; // Có thể cần cho [Column]
 
 namespace WebDacSanVungMien.Models
+
+
 {
     public class Specialty
     {
         public int SpecialtyID { get; set; } // PK
+
 
         [Required(ErrorMessage = "Vùng miền không được để trống.")]
         public int RegionID { get; set; } // FK
@@ -28,9 +32,14 @@ namespace WebDacSanVungMien.Models
         [Column(TypeName = "decimal(18, 2)")] // Định dạng tiền tệ/giá
         public decimal Price { get; set; } // Thêm trường Price (Giá)
 
-        public decimal AvgRating { get; set; }
-        public int ViewCount { get; set; } // Thống kê lượt xem
-        public bool IsApproved { get; set; } // Dùng cho Quản lý thông tin đặc sản (kiểm duyệt)
+
+        public int RegionID { get; set; } // FK
+        public string SpecialtyName { get; set; }
+        public string ShortDescription { get; set; } // Phục vụ cho trang danh sách/tìm kiếm
+        public string Ingredients { get; set; }
+        public string Preparation { get; set; }
+        public string ImageURL { get; set; }
+
 
         [Required]
         public DateTime CreatedDate { get; set; } // Thêm CreatedDate để quản lý
@@ -46,3 +55,11 @@ namespace WebDacSanVungMien.Models
         public ICollection<Rating> Ratings { get; set; }
     }
 }
+
+        // Navigation
+        public Region Region { get; set; }
+        public ICollection<UserFavorite> UserFavorites { get; set; }
+        public ICollection<Rating> Ratings { get; set; } 
+    }
+}
+

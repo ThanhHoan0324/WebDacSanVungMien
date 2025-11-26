@@ -1,3 +1,4 @@
+
 ﻿// File: Region.cs
 
 using System.ComponentModel.DataAnnotations; // Thêm dòng này
@@ -26,3 +27,4 @@ namespace WebDacSanVungMien.Models
         }
     }
 }
+

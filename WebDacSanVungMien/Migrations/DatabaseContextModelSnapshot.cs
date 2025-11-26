@@ -129,6 +129,7 @@ namespace WebDacSanVungMien.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+
                     b.Property<string>("ImageURL")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -143,9 +144,9 @@ namespace WebDacSanVungMien.Migrations
                     b.Property<string>("Preparation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18, 2)");
+
 
                     b.Property<int>("RegionID")
                         .HasColumnType("int");
@@ -156,8 +157,10 @@ namespace WebDacSanVungMien.Migrations
 
                     b.Property<string>("SpecialtyName")
                         .IsRequired()
+
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
 
                     b.Property<int>("ViewCount")
                         .HasColumnType("int");

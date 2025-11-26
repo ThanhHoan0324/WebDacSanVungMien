@@ -6,10 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using BCrypt.Net;
 using WebDacSanVungMien.Models.ViewModels;
-using System.Security.Claims; // Cần thiết cho Authentication
-using Microsoft.AspNetCore.Authentication; // Cần thiết cho Authentication
-using Microsoft.AspNetCore.Authentication.Cookies; // Cần thiết cho Authentication
-
+using System.Security.Claims; 
+using Microsoft.AspNetCore.Authentication; 
+using Microsoft.AspNetCore.Authentication.Cookies; 
 namespace WebDacSanVungMien.Controllers
 {
     public class AccountController : Controller
@@ -19,14 +18,11 @@ namespace WebDacSanVungMien.Controllers
         private const int AdminRoleID = 1;
         private const int MemberRoleID = 2;
 
-
         public AccountController(DatabaseContext context)
         {
             _context = context;
         }
-
         private const string AuthViewName = "Login";
-
         [HttpGet]
         public IActionResult Login()
         {
@@ -39,7 +35,6 @@ namespace WebDacSanVungMien.Controllers
             return View(AuthViewName, viewModel);
         }
 
-        // --- HÀNH ĐỘNG POST: Xử lý Đăng Ký ---
         [HttpPost]
         public async Task<IActionResult> Register(AccountViewModel viewModel)
         {
@@ -73,6 +68,7 @@ namespace WebDacSanVungMien.Controllers
                 PhoneNumber = model.PhoneNumber ?? string.Empty,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
                 RoleID = MemberRoleID, // Mặc định là Member (RoleID = 2)
+
                 RegistrationDate = DateTime.Now,
                 IsBanned = false,
                 LastLogin = DateTime.Now
@@ -88,6 +84,7 @@ namespace WebDacSanVungMien.Controllers
             }
             catch (DbUpdateException ex)
             {
+
                 ModelState.AddModelError("", "Lỗi Database: " + ex.Message);
                 ViewBag.ActiveTab = "Register";
                 return View(AuthViewName, viewModel);
@@ -111,8 +108,8 @@ namespace WebDacSanVungMien.Controllers
                 ViewBag.ActiveTab = "Login";
                 return View(AuthViewName, viewModel);
             }
-
             // 1. Tìm kiếm User bằng Email, tải Role kèm theo
+
             var user = await _context.Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == model.Email);
@@ -132,7 +129,6 @@ namespace WebDacSanVungMien.Controllers
                 ViewBag.ActiveTab = "Login";
                 return View(AuthViewName, viewModel);
             }
-
             // 4. Cập nhật thời gian đăng nhập cuối cùng
             user.LastLogin = DateTime.Now;
             await _context.SaveChangesAsync();
@@ -178,6 +174,7 @@ namespace WebDacSanVungMien.Controllers
                 // Chuyển hướng đến trang chủ công cộng
                 return RedirectToAction("Index", "Home");
             }
+
         }
     }
 }

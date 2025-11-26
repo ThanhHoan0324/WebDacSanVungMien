@@ -101,6 +101,7 @@ input, select, textarea {
     max-width: 280px;
 }
 
+
 @keyframes fadeOutQuick {
     0% {
         opacity: 1;
